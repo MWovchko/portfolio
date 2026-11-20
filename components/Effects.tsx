@@ -230,59 +230,6 @@ export function ParallaxLayer({
 }
 
 /* ---------------- 3D hero card ---------------- */
-export function HeroCard3D({ lines }: { lines: { k: string; v: string }[] }) {
-  const rx = useMotionValue(0);
-  const ry = useMotionValue(0);
-  const srx = useSpring(rx, { stiffness: 120, damping: 14 });
-  const sry = useSpring(ry, { stiffness: 120, damping: 14 });
-  const { scrollY } = useScroll();
-  const scrollRot = useTransform(scrollY, [0, 800], [0, 35]);
-  const rotateX = useTransform([srx, scrollRot], ([a, b]: number[]) => a + b);
-  const shine = useTransform(sry, [-20, 20], ["0%", "100%"]);
-
-  useEffect(() => {
-    if (prefersReduced()) return;
-    const move = (e: PointerEvent) => {
-      const nx = e.clientX / window.innerWidth - 0.5;
-      const ny = e.clientY / window.innerHeight - 0.5;
-      ry.set(nx * 30);
-      rx.set(-ny * 22);
-    };
-    window.addEventListener("pointermove", move);
-    return () => window.removeEventListener("pointermove", move);
-  }, [rx, ry]);
-
-  return (
-    <div className="hero3d" aria-hidden>
-      <motion.div
-        className="hero3d-card"
-        style={{ rotateX, rotateY: sry, transformPerspective: 1000 }}
-        initial={{ opacity: 0, y: 60, rotateZ: -6 }}
-        animate={{ opacity: 1, y: 0, rotateZ: 0 }}
-        transition={{ delay: 1.2, duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
-      >
-        <motion.div className="hero3d-shine" style={{ backgroundPositionX: shine }} />
-        <div className="hero3d-layer l1">
-          <div className="mono hero3d-tag">ID · {new Date().getFullYear()}</div>
-          <div className="hero3d-chip" />
-        </div>
-        <div className="hero3d-layer l2">
-          {lines.map((l) => (
-            <div key={l.k} className="hero3d-row">
-              <span className="mono">{l.k}</span>
-              <span>{l.v}</span>
-            </div>
-          ))}
-        </div>
-        <div className="hero3d-layer l3">
-          <div className="hero3d-orb" />
-        </div>
-      </motion.div>
-    </div>
-  );
-}
-
-/* ---------------- Photo heroes for the themed versions ---------------- */
 export function HeroPhotoNeon() {
   const rx = useMotionValue(0);
   const ry = useMotionValue(0);
@@ -317,44 +264,5 @@ export function HeroPhotoNeon() {
         <div className="neon-label mono">MW · FOUNDER</div>
       </motion.div>
     </motion.div>
-  );
-}
-
-export function HeroPhotoNight() {
-  const { scrollY } = useScroll();
-  const y = useTransform(scrollY, [0, 900], [0, 220]);
-  const scale = useTransform(scrollY, [0, 900], [1.05, 1.2]);
-  const mx = useMotionValue(50);
-  const my = useMotionValue(40);
-  const smx = useSpring(mx, { stiffness: 60, damping: 20 });
-  const smy = useSpring(my, { stiffness: 60, damping: 20 });
-  const light = useTransform([smx, smy], ([a, b]: number[]) =>
-    `radial-gradient(360px circle at ${a}% ${b}%, rgba(94,234,212,.22), transparent 60%)`
-  );
-  useEffect(() => {
-    if (prefersReduced()) return;
-    const move = (e: PointerEvent) => {
-      mx.set((e.clientX / window.innerWidth) * 100);
-      my.set((e.clientY / window.innerHeight) * 100);
-    };
-    window.addEventListener("pointermove", move);
-    return () => window.removeEventListener("pointermove", move);
-  }, [mx, my]);
-  return (
-    <div className="hero-photo night" aria-hidden>
-      <motion.div
-        className="night-img"
-        style={{ y, scale }}
-        initial={{ opacity: 0, filter: "brightness(0)" }}
-        animate={{ opacity: 1, filter: "brightness(1)" }}
-        transition={{ delay: 0.9, duration: 2.2, ease: "easeOut" }}
-      >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/images/maxwell-night.jpg" alt="" />
-      </motion.div>
-      <motion.div className="night-light" style={{ background: light }} />
-      <div className="night-fog" />
-      <div className="night-stars" />
-    </div>
   );
 }

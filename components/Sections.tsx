@@ -356,7 +356,7 @@ export function Strengths() {
 
 /* ---------------- Footer ---------------- */
 
-export function Footer({ theme = "original" }: { theme?: string }) {
+export function Footer({ theme = "neon" }: { theme?: string }) {
   const { contact } = profile;
   return (
     <footer id="contact">
@@ -404,12 +404,9 @@ export function Footer({ theme = "original" }: { theme?: string }) {
             © {new Date().getFullYear()} {profile.name}
           </span>
           <span className="mono theme-links">
-            Theme:{" "}
+            Version:{" "}
             {[
               ["neon", "/", "Neon"],
-              ["original", "/original", "Original"],
-              ["night", "/night", "Night"],
-              ["gallery", "/gallery", "Gallery"],
               ["executive", "/executive", "Executive"],
             ].map(([id, href, label]) => (
               <a key={id} href={href} className={theme === id ? "on" : ""}>
