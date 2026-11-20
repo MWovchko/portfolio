@@ -6,9 +6,10 @@ import { Cursor, Loader, SmoothScroll } from "@/components/Effects";
 import Hero from "@/components/Hero";
 import { Now, ResumeSection } from "@/components/NowResume";
 import Recommendations from "@/components/Recommendations";
+import TunnelHero from "@/components/Tunnel";
 import { About, Achievements, Footer, Marquee, Strengths } from "@/components/Sections";
 
-export type Theme = "original" | "neon" | "night";
+export type Theme = "original" | "neon" | "night" | "gallery";
 
 export default function Site({ theme = "original" }: { theme?: Theme }) {
   useEffect(() => {
@@ -27,7 +28,7 @@ export default function Site({ theme = "original" }: { theme?: Theme }) {
       <Background />
       <Nav />
       <main>
-        <Hero theme={theme} />
+        {theme === "gallery" ? <TunnelHero /> : <Hero theme={theme} />}
         <About />
         <Now />
         <Achievements />

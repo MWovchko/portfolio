@@ -409,6 +409,7 @@ export function Footer({ theme = "original" }: { theme?: string }) {
               ["original", "/", "Original"],
               ["neon", "/neon", "Neon"],
               ["night", "/night", "Night"],
+              ["gallery", "/gallery", "Gallery"],
             ].map(([id, href, label]) => (
               <a key={id} href={href} className={theme === id ? "on" : ""}>
                 {label}
