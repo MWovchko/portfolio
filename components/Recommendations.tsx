@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { profile, relationshipTypes } from "@/content/profile";
 import type { PublicRecommendation } from "@/lib/store";
 import { useGlow } from "./Chrome";
+import { ParallaxLayer } from "./Effects";
 import { Reveal, SectionHead } from "./Sections";
 import { StarPicker, Stars } from "./Stars";
 
@@ -191,6 +192,7 @@ export default function Recommendations() {
 
   return (
     <section id="recommendations">
+      <ParallaxLayer speed={0.9} className="deco deco-star" style={{ right: "8%", top: "6%" }}>★</ParallaxLayer>
       <div className="container">
         <SectionHead
           eyebrow="06 / Recommendations"

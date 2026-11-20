@@ -13,6 +13,7 @@ import {
 import { useEffect, useMemo, useRef, useState } from "react";
 import { achievements, profile, strengths, type AchievementCategory } from "@/content/profile";
 import { useGlow } from "./Chrome";
+import { Magnetic, ParallaxLayer } from "./Effects";
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
@@ -46,9 +47,22 @@ export function SectionHead({ eyebrow, title, lead }: { eyebrow: string; title: 
       <Reveal>
         <div className="eyebrow">{eyebrow}</div>
       </Reveal>
-      <Reveal delay={0.05}>
-        <h2 className="section-title">{title}</h2>
-      </Reveal>
+      <motion.h2
+        className="section-title"
+        initial="hidden"
+        whileInView="shown"
+        viewport={{ once: true, margin: "-60px" }}
+      >
+        <span className="mask">
+          <motion.span
+            className="mask-inner"
+            variants={{ hidden: { y: "110%", rotate: 3 }, shown: { y: "0%", rotate: 0 } }}
+            transition={{ duration: 1, ease }}
+          >
+            {title}
+          </motion.span>
+        </span>
+      </motion.h2>
       {lead && (
         <Reveal delay={0.1}>
           <p className="section-lead">{lead}</p>
@@ -110,6 +124,8 @@ export function About() {
   const glow = useGlow();
   return (
     <section id="about">
+      <ParallaxLayer speed={0.6} className="deco deco-ring" style={{ right: "6%", top: "12%" }} />
+      <ParallaxLayer speed={1.1} className="deco deco-plus" style={{ left: "4%", bottom: "18%" }}>+</ParallaxLayer>
       <div className="container">
         <SectionHead eyebrow="01 / About" title={<>Built on <span className="grad-text">discipline.</span></>} />
         <div className="about-grid">
@@ -298,6 +314,8 @@ function TiltCard({ children }: { children: React.ReactNode }) {
 export function Strengths() {
   return (
     <section id="strengths">
+      <ParallaxLayer speed={0.8} className="deco deco-square" style={{ left: "8%", top: "10%" }} />
+      <ParallaxLayer speed={0.4} className="deco deco-ring" style={{ right: "4%", bottom: "8%", width: 180, height: 180 }} />
       <div className="container">
         <SectionHead
           eyebrow="04 / Strengths"
@@ -360,18 +378,25 @@ export function Footer() {
           </h2>
           <div className="footer-links">
             {contact.email && (
-              <a className="btn btn-primary" href={`mailto:${contact.email}`}>
-                Email me
-              </a>
+              <Magnetic>
+                <a className="btn btn-primary" href={`mailto:${contact.email}`}>
+                  Email me
+                </a>
+              </Magnetic>
             )}
+            {contact.email && <CopyEmail email={contact.email} />}
             {contact.links.filter((l) => !l.placeholder).map((l) => (
-              <a key={l.label} className="btn" href={l.href} target="_blank" rel="noopener noreferrer">
-                {l.label} <span aria-hidden>↗</span>
-              </a>
+              <Magnetic key={l.label}>
+                <a className="btn" href={l.href} target="_blank" rel="noopener noreferrer">
+                  {l.label} <span aria-hidden>↗</span>
+                </a>
+              </Magnetic>
             ))}
-            <a className="btn" href="#recommend">
-              <span style={{ color: "var(--star)" }}>★</span> Leave a recommendation
-            </a>
+            <Magnetic>
+              <a className="btn" href="#recommend">
+                <span style={{ color: "var(--star)" }}>★</span> Leave a recommendation
+              </a>
+            </Magnetic>
           </div>
         </motion.div>
         <div className="footer-bottom">
@@ -382,5 +407,39 @@ export function Footer() {
         </div>
       </div>
     </footer>
+  );
+}
+
+/* Micro interaction: copy email with a little confirmation. */
+function CopyEmail({ email }: { email: string }) {
+  const [copied, setCopied] = useState(false);
+  return (
+    <Magnetic>
+      <button
+        className="btn"
+        onClick={async () => {
+          try {
+            await navigator.clipboard.writeText(email);
+          } catch {}
+          setCopied(true);
+          setTimeout(() => setCopied(false), 1800);
+        }}
+        aria-live="polite"
+        style={{ minWidth: 150, justifyContent: "center" }}
+      >
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.span
+            key={copied ? "y" : "n"}
+            initial={{ y: 12, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: -12, opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            style={{ color: copied ? "var(--lime)" : undefined }}
+          >
+            {copied ? "✓ Copied" : "Copy email"}
+          </motion.span>
+        </AnimatePresence>
+      </button>
+    </Magnetic>
   );
 }

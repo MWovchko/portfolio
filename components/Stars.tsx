@@ -1,4 +1,5 @@
 "use client";
+import { motion } from "framer-motion";
 import { useState } from "react";
 
 const PATH =
@@ -49,7 +50,13 @@ export function StarPicker({ value, onChange }: { value: number; onChange: (v: n
             onMouseEnter={() => setHover(i)}
             onClick={() => onChange(i)}
           >
-            <StarIcon fill={i <= shown ? 1 : 0} />
+            <motion.span
+              style={{ display: "inline-block", lineHeight: 0 }}
+              animate={value >= i ? { scale: [1, 1.35, 1], rotate: [0, -12, 0] } : { scale: 1 }}
+              transition={{ duration: 0.4, delay: value >= i ? (i - 1) * 0.05 : 0 }}
+            >
+              <StarIcon fill={i <= shown ? 1 : 0} />
+            </motion.span>
           </button>
         ))}
       </div>

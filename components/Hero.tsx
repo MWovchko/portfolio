@@ -1,7 +1,8 @@
 "use client";
 import { AnimatePresence, motion, useScroll, useTransform } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
-import { profile } from "@/content/profile";
+import { now, profile } from "@/content/profile";
+import { HeroCard3D, Magnetic } from "./Effects";
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
@@ -94,14 +95,27 @@ export default function Hero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.25, duration: 0.7, ease }}
         >
-          <a href="#achievements" className="btn btn-primary">
-            See my work <span aria-hidden>→</span>
-          </a>
-          <a href="#recommend" className="btn">
-            <span aria-hidden style={{ color: "var(--star)" }}>★</span> Recommend me
-          </a>
+          <Magnetic>
+            <a href="#achievements" className="btn btn-primary">
+              See my work <span aria-hidden>→</span>
+            </a>
+          </Magnetic>
+          <Magnetic>
+            <a href="#recommend" className="btn">
+              <span aria-hidden style={{ color: "var(--star)" }}>★</span> Recommend me
+            </a>
+          </Magnetic>
         </motion.div>
       </motion.div>
+
+      <HeroCard3D
+        lines={[
+          { k: "NAME", v: profile.name },
+          { k: "ROLE", v: `${now.venture.role}, ${now.venture.name}` },
+          { k: "SCHOOL", v: "ORU · Class of 2030" },
+          { k: "STATUS", v: "Open to opportunities" },
+        ]}
+      />
 
       <motion.div className="scroll-cue" style={{ opacity }}>
         SCROLL
