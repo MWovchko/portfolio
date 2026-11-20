@@ -1,0 +1,461 @@
+"use client";
+import {
+  AnimatePresence,
+  animate,
+  motion,
+  useInView,
+  useMotionValue,
+  useScroll,
+  useSpring,
+  useTransform,
+  type MotionValue,
+} from "framer-motion";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { achievements, config, copy, profile, strengths } from "@/content/profile";
+import { eyebrow, TitleText, THEME_LABELS, themeHref } from "@/lib/site";
+import { useGlow } from "./Chrome";
+import { Magnetic, ParallaxLayer } from "./Effects";
+
+const ease = [0.22, 1, 0.36, 1] as const;
+
+export function Reveal({
+  children,
+  delay = 0,
+  y = 40,
+  className,
+}: {
+  children: React.ReactNode;
+  delay?: number;
+  y?: number;
+  className?: string;
+}) {
+  return (
+    <motion.div
+      className={className}
+      initial={{ opacity: 0, y }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-80px" }}
+      transition={{ duration: 0.8, delay, ease }}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+export function SectionHead({ eyebrow, title, lead }: { eyebrow: string; title: React.ReactNode; lead?: string }) {
+  return (
+    <>
+      <Reveal>
+        <div className="eyebrow">{eyebrow}</div>
+      </Reveal>
+      <motion.h2
+        className="section-title"
+        initial="hidden"
+        whileInView="shown"
+        viewport={{ once: true, margin: "-60px" }}
+      >
+        <span className="mask">
+          <motion.span
+            className="mask-inner"
+            variants={{ hidden: { y: "110%", rotate: 3 }, shown: { y: "0%", rotate: 0 } }}
+            transition={{ duration: 1, ease }}
+          >
+            {title}
+          </motion.span>
+        </span>
+      </motion.h2>
+      {lead && (
+        <Reveal delay={0.1}>
+          <p className="section-lead">{lead}</p>
+        </Reveal>
+      )}
+    </>
+  );
+}
+
+/* ---------------- About ---------------- */
+
+function Word({ children, range, progress }: { children: string; range: [number, number]; progress: MotionValue<number> }) {
+  const opacity = useTransform(progress, range, [0.15, 1]);
+  return (
+    <motion.span className="w" style={{ opacity }}>
+      {children}
+    </motion.span>
+  );
+}
+
+function ScrollParagraph({ text }: { text: string }) {
+  const ref = useRef<HTMLParagraphElement>(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start 0.85", "end 0.45"] });
+  const words = text.split(" ");
+  return (
+    <p ref={ref}>
+      {words.map((w, i) => {
+        const start = i / words.length;
+        return (
+          <Word key={i} progress={scrollYProgress} range={[start, start + 1 / words.length]}>
+            {w + (i < words.length - 1 ? " " : "")}
+          </Word>
+        );
+      })}
+    </p>
+  );
+}
+
+function Counter({ to, suffix = "" }: { to: number; suffix?: string }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const inView = useInView(ref, { once: true, margin: "-60px" });
+  const [val, setVal] = useState(0);
+  useEffect(() => {
+    if (!inView) return;
+    // Years (e.g. 2030) count up from a nearby value so they don't spin through thousands.
+    const from = to > 1000 ? to - 30 : 0;
+    const c = animate(from, to, { duration: 1.6, ease: [0.16, 1, 0.3, 1], onUpdate: (v) => setVal(Math.round(v)) });
+    return () => c.stop();
+  }, [inView, to]);
+  return (
+    <span ref={ref}>
+      {val}
+      {suffix}
+    </span>
+  );
+}
+
+export function About() {
+  const glow = useGlow();
+  return (
+    <section id="about">
+      <ParallaxLayer speed={0.6} className="deco deco-ring" style={{ right: "6%", top: "12%" }} />
+      <ParallaxLayer speed={1.1} className="deco deco-plus" style={{ left: "4%", bottom: "18%" }}>+</ParallaxLayer>
+      <div className="container">
+        <SectionHead eyebrow={eyebrow("about")} title={<TitleText t={copy.about.title} />} />
+        <div className="about-grid">
+          <div className="about-text">
+            {profile.bio.map((p, i) => (
+              <ScrollParagraph key={i} text={p} />
+            ))}
+          </div>
+          <div className="stats">
+            {profile.stats.map((s, i) => (
+              <Reveal key={s.label} delay={i * 0.08}>
+                <div className="panel panel-glow stat" onMouseMove={glow}>
+                  <div className="stat-value">
+                    <Counter to={s.value} suffix={s.suffix} />
+                  </div>
+                  <div className="stat-label">
+                    {s.label} {s.placeholder && <span className="badge-draft mono">DRAFT</span>}
+                  </div>
+                </div>
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ---------------- Achievements ---------------- */
+
+export function Achievements() {
+  const cats = useMemo(
+    () => ["All", ...Array.from(new Set(achievements.map((a) => a.category)))],
+    []
+  );
+  const [filter, setFilter] = useState("All");
+  const items = achievements.filter((a) => filter === "All" || a.category === filter);
+
+  const ref = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start 0.7", "end 0.6"] });
+  const scaleY = useSpring(scrollYProgress, { stiffness: 100, damping: 30 });
+  const glow = useGlow();
+
+  return (
+    <section id="achievements">
+      <div className="container">
+        <SectionHead
+          eyebrow={eyebrow("achievements")}
+          title={<TitleText t={copy.achievements.title} />}
+          lead={copy.achievements.lead}
+        />
+        <Reveal>
+          <div className="filters" role="tablist" aria-label="Filter achievements">
+            {cats.map((c) => (
+              <button
+                key={c}
+                role="tab"
+                aria-selected={filter === c}
+                className={`chip ${filter === c ? "active" : ""}`}
+                onClick={() => setFilter(c)}
+                style={{ isolation: "isolate" }}
+              >
+                {filter === c && <motion.span layoutId="chip-bg" className="chip-bg" transition={{ type: "spring", stiffness: 400, damping: 34 }} />}
+                <span>{c}</span>
+              </button>
+            ))}
+          </div>
+        </Reveal>
+
+        <div className="timeline" ref={ref}>
+          <div className="timeline-track">
+            <motion.div className="timeline-fill" style={{ scaleY }} />
+          </div>
+          <AnimatePresence mode="popLayout">
+            {items.map((a, i) => {
+              const right = i % 2 === 1;
+              return (
+                <motion.div
+                  layout
+                  key={a.title}
+                  className={`t-item ${right ? "right" : ""}`}
+                  initial={{ opacity: 0, x: right ? 60 : -60 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  viewport={{ once: true, margin: "-80px" }}
+                  transition={{ duration: 0.8, ease }}
+                >
+                  <motion.span
+                    className="t-node"
+                    initial={{ scale: 0 }}
+                    whileInView={{ scale: 1 }}
+                    viewport={{ once: true, margin: "-120px" }}
+                    transition={{ type: "spring", stiffness: 300, damping: 15, delay: 0.2 }}
+                  />
+                  <span className="t-date">{a.date}</span>
+                  <article className={`panel panel-glow t-card ${a.featured ? "featured" : ""}`} onMouseMove={glow}>
+                    {a.image && (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img className="t-img" src={a.image} alt="" loading="lazy" />
+                    )}
+                    {a.metric && <span className="t-metric">{a.metric}</span>}
+                    <div className="t-cat">
+                      {a.category}
+                      {a.placeholder && <span className="badge-draft">DRAFT</span>}
+                    </div>
+                    <h3>{a.title}</h3>
+                    {a.org && <div className="t-org">{a.org}</div>}
+                    <p>{a.description}</p>
+                    {a.link && (
+                      <a className="t-link" href={a.link} target="_blank" rel="noopener noreferrer">
+                        {copy.achievements.linkLabel} <span aria-hidden>↗</span>
+                      </a>
+                    )}
+                  </article>
+                </motion.div>
+              );
+            })}
+          </AnimatePresence>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ---------------- Marquee ---------------- */
+
+export function Marquee() {
+  const ref = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
+  const x1 = useTransform(scrollYProgress, [0, 1], ["0%", "-35%"]);
+  const x2 = useTransform(scrollYProgress, [0, 1], ["-35%", "0%"]);
+  const words = strengths.map((s) => s.name);
+  const row = [...words, ...words, ...words];
+  return (
+    <div ref={ref} aria-hidden style={{ display: "grid", gap: 0 }}>
+      <div className="marquee">
+        <motion.div className="marquee-track" style={{ x: x1 }}>
+          {row.map((w, i) => (
+            <span key={i} className={i % 2 ? "o" : ""}>
+              {w} <span style={{ color: "var(--cyan)" }}>✦</span>
+            </span>
+          ))}
+        </motion.div>
+      </div>
+      <div className="marquee" style={{ borderTop: 0 }}>
+        <motion.div className="marquee-track" style={{ x: x2 }}>
+          {row.map((w, i) => (
+            <span key={i} className={i % 2 ? "" : "o"}>
+              {w} <span style={{ color: "var(--violet)" }}>✦</span>
+            </span>
+          ))}
+        </motion.div>
+      </div>
+    </div>
+  );
+}
+
+/* ---------------- Strengths ---------------- */
+
+function TiltCard({ children }: { children: React.ReactNode }) {
+  const rx = useMotionValue(0);
+  const ry = useMotionValue(0);
+  const srx = useSpring(rx, { stiffness: 200, damping: 20 });
+  const sry = useSpring(ry, { stiffness: 200, damping: 20 });
+  const glow = useGlow();
+  return (
+    <motion.div
+      className="panel panel-glow s-card"
+      style={{ rotateX: srx, rotateY: sry, transformPerspective: 900 }}
+      onMouseMove={(e) => {
+        glow(e);
+        const r = e.currentTarget.getBoundingClientRect();
+        ry.set(((e.clientX - r.left) / r.width - 0.5) * 10);
+        rx.set(-((e.clientY - r.top) / r.height - 0.5) * 10);
+      }}
+      onMouseLeave={() => {
+        rx.set(0);
+        ry.set(0);
+      }}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+export function Strengths() {
+  return (
+    <section id="strengths">
+      <ParallaxLayer speed={0.8} className="deco deco-square" style={{ left: "8%", top: "10%" }} />
+      <ParallaxLayer speed={0.4} className="deco deco-ring" style={{ right: "4%", bottom: "8%", width: 180, height: 180 }} />
+      <div className="container">
+        <SectionHead
+          eyebrow={eyebrow("strengths")}
+          title={<TitleText t={copy.strengths.title} />}
+          lead={copy.strengths.lead}
+        />
+        <div className="strengths">
+          {strengths.map((s, i) => (
+            <Reveal key={s.name} delay={(i % 3) * 0.1}>
+              <TiltCard>
+                <div className="s-head">
+                  <h3>{s.name}</h3>
+                  <span className="s-num">0{i + 1}</span>
+                </div>
+                {config.features.strengthMeters && s.level != null && (
+                  <div className="meter">
+                    <motion.div
+                      className="meter-fill"
+                      initial={{ scaleX: 0 }}
+                      whileInView={{ scaleX: s.level / 100 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 1.4, delay: 0.2 + (i % 3) * 0.1, ease }}
+                    />
+                  </div>
+                )}
+                <p>{s.description}</p>
+                <div className="s-evidence">
+                  {s.evidence.map((e) => (
+                    <span key={e}>{e}</span>
+                  ))}
+                </div>
+              </TiltCard>
+            </Reveal>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ---------------- Footer ---------------- */
+
+export function Footer({ theme = "original" }: { theme?: string }) {
+  const { contact } = profile;
+  const versions = [config.theme, ...config.alternates.filter((t) => t !== config.theme)];
+  return (
+    <footer id="contact">
+      <div className="container">
+        <motion.div
+          className="footer-cta"
+          initial={{ opacity: 0, scale: 0.9, y: 40 }}
+          whileInView={{ opacity: 1, scale: 1, y: 0 }}
+          viewport={{ once: true, margin: "-60px" }}
+          transition={{ duration: 1, ease }}
+        >
+          <div className="eyebrow" style={{ justifyContent: "center" }}>
+            {eyebrow("contact")}
+          </div>
+          <h2>
+            <TitleText t={copy.contact.title} br />
+          </h2>
+          {copy.contact.note && <p className="section-lead" style={{ margin: "0 auto 32px" }}>{copy.contact.note}</p>}
+          <div className="footer-links">
+            {contact.email && (
+              <Magnetic>
+                <a className="btn btn-primary" href={`mailto:${contact.email}`}>
+                  Email me
+                </a>
+              </Magnetic>
+            )}
+            {contact.email && <CopyEmail email={contact.email} />}
+            {contact.links.filter((l) => !l.placeholder).map((l) => (
+              <Magnetic key={l.label}>
+                <a className="btn" href={l.href} target="_blank" rel="noopener noreferrer">
+                  {l.label} <span aria-hidden>↗</span>
+                </a>
+              </Magnetic>
+            ))}
+            {config.features.recommendations && (
+              <Magnetic>
+                <a className="btn" href="#recommend">
+                  <span style={{ color: "var(--star)" }}>★</span> Leave a recommendation
+                </a>
+              </Magnetic>
+            )}
+          </div>
+        </motion.div>
+        <div className="footer-bottom">
+          <span>
+            © {new Date().getFullYear()} {profile.name}
+          </span>
+          {versions.length > 1 ? (
+            <span className="mono theme-links">
+              Theme:{" "}
+              {versions.map((id) => (
+                <a key={id} href={themeHref(id)} className={theme === id ? "on" : ""}>
+                  {THEME_LABELS[id]}
+                </a>
+              ))}
+            </span>
+          ) : (
+            <span className="mono">{config.voice === "third" ? "Built from public sources" : profile.location}</span>
+          )}
+        </div>
+      </div>
+    </footer>
+  );
+}
+
+/* Micro interaction: copy email with a little confirmation. */
+function CopyEmail({ email }: { email: string }) {
+  const [copied, setCopied] = useState(false);
+  return (
+    <Magnetic>
+      <button
+        className="btn"
+        onClick={async () => {
+          try {
+            await navigator.clipboard.writeText(email);
+          } catch {}
+          setCopied(true);
+          setTimeout(() => setCopied(false), 1800);
+        }}
+        aria-live="polite"
+        style={{ minWidth: 150, justifyContent: "center" }}
+      >
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.span
+            key={copied ? "y" : "n"}
+            initial={{ y: 12, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: -12, opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            style={{ color: copied ? "var(--lime)" : undefined }}
+          >
+            {copied ? "✓ Copied" : "Copy email"}
+          </motion.span>
+        </AnimatePresence>
+      </button>
+    </Magnetic>
+  );
+}
