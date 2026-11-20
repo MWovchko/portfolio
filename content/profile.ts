@@ -72,7 +72,7 @@ export const profile = {
   ] as Stat[],
   contact: {
     /** Public contact email. Swap for a personal one any time. */
-    email: "me@darkdorms.com",
+    email: "maxwell@wovchko.com",
     phone: "", // optional, e.g. "(615) 555-0123". Left blank so it isn't published by accident.
     links: [
       { label: "LinkedIn", href: "https://www.linkedin.com/in/", placeholder: true },

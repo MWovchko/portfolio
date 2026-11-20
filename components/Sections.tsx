@@ -406,8 +406,8 @@ export function Footer({ theme = "original" }: { theme?: string }) {
           <span className="mono theme-links">
             Theme:{" "}
             {[
-              ["original", "/", "Original"],
-              ["neon", "/neon", "Neon"],
+              ["neon", "/", "Neon"],
+              ["original", "/original", "Original"],
               ["night", "/night", "Night"],
               ["gallery", "/gallery", "Gallery"],
             ].map(([id, href, label]) => (

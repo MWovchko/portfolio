@@ -6,8 +6,8 @@ a printable resume, and a moderated star-rating recommendation system.
 Built with Next.js + Framer Motion. Deployed on Vercel.
 
 ## Versions
-- `/` Original (cyan/violet, 3D ID card)
-- `/neon` Neon studio theme from the gel-lit portrait
+- `/` Neon studio theme from the gel-lit portrait (main version)
+- `/original` Original (cyan/violet, 3D ID card)
 - `/night` Night theme from the dark teal portrait
 - `/gallery` 3D scroll tunnel into a chamber of featured work
 All four share the same content and recommendations. Switch between them in the footer.
