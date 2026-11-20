@@ -2,7 +2,7 @@
 import { AnimatePresence, motion, useScroll, useTransform } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { now, profile } from "@/content/profile";
-import { HeroCard3D, Magnetic } from "./Effects";
+import { HeroCard3D, HeroPhotoNeon, HeroPhotoNight, Magnetic } from "./Effects";
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
@@ -24,7 +24,7 @@ function SplitLine({ text, delay, gradient }: { text: string; delay: number; gra
   );
 }
 
-export default function Hero() {
+export default function Hero({ theme = "original" }: { theme?: "original" | "neon" | "night" }) {
   const ref = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
   const y = useTransform(scrollYProgress, [0, 1], [0, 220]);
@@ -42,7 +42,7 @@ export default function Hero() {
   const last = rest.join(" ");
 
   return (
-    <section className="hero" id="top" ref={ref}>
+    <section className={`hero hero-${theme}`} id="top" ref={ref}>
       <motion.div className="container" style={{ y, opacity, scale, filter: blur }}>
         <motion.div
           className="hero-tag"
@@ -108,14 +108,16 @@ export default function Hero() {
         </motion.div>
       </motion.div>
 
-      <HeroCard3D
+      {theme === "neon" && <HeroPhotoNeon />}
+      {theme === "night" && <HeroPhotoNight />}
+      {theme === "original" && <HeroCard3D
         lines={[
           { k: "NAME", v: profile.name },
           { k: "ROLE", v: `${now.venture.role}, ${now.venture.name}` },
           { k: "SCHOOL", v: "ORU · Class of 2030" },
           { k: "STATUS", v: "Open to opportunities" },
         ]}
-      />
+      />}
 
       <motion.div className="scroll-cue" style={{ opacity }}>
         SCROLL

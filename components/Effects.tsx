@@ -281,3 +281,80 @@ export function HeroCard3D({ lines }: { lines: { k: string; v: string }[] }) {
     </div>
   );
 }
+
+/* ---------------- Photo heroes for the themed versions ---------------- */
+export function HeroPhotoNeon() {
+  const rx = useMotionValue(0);
+  const ry = useMotionValue(0);
+  const srx = useSpring(rx, { stiffness: 120, damping: 14 });
+  const sry = useSpring(ry, { stiffness: 120, damping: 14 });
+  const { scrollY } = useScroll();
+  const y = useTransform(scrollY, [0, 800], [0, 160]);
+  const glowX = useTransform(sry, [-18, 18], ["20%", "80%"]);
+  useEffect(() => {
+    if (prefersReduced()) return;
+    const move = (e: PointerEvent) => {
+      ry.set((e.clientX / window.innerWidth - 0.5) * 24);
+      rx.set(-(e.clientY / window.innerHeight - 0.5) * 18);
+    };
+    window.addEventListener("pointermove", move);
+    return () => window.removeEventListener("pointermove", move);
+  }, [rx, ry]);
+  return (
+    <motion.div className="hero-photo neon" style={{ y }} aria-hidden>
+      <motion.div
+        className="neon-frame"
+        style={{ rotateX: srx, rotateY: sry, transformPerspective: 1100 }}
+        initial={{ opacity: 0, scale: 0.9, rotateZ: 4 }}
+        animate={{ opacity: 1, scale: 1, rotateZ: 0 }}
+        transition={{ delay: 1.1, duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
+      >
+        <div className="neon-ring a" />
+        <div className="neon-ring b" />
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/images/maxwell-neon.jpg" alt="" />
+        <motion.div className="neon-sheen" style={{ left: glowX }} />
+        <div className="neon-label mono">MW · FOUNDER</div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
+export function HeroPhotoNight() {
+  const { scrollY } = useScroll();
+  const y = useTransform(scrollY, [0, 900], [0, 220]);
+  const scale = useTransform(scrollY, [0, 900], [1.05, 1.2]);
+  const mx = useMotionValue(50);
+  const my = useMotionValue(40);
+  const smx = useSpring(mx, { stiffness: 60, damping: 20 });
+  const smy = useSpring(my, { stiffness: 60, damping: 20 });
+  const light = useTransform([smx, smy], ([a, b]: number[]) =>
+    `radial-gradient(360px circle at ${a}% ${b}%, rgba(94,234,212,.22), transparent 60%)`
+  );
+  useEffect(() => {
+    if (prefersReduced()) return;
+    const move = (e: PointerEvent) => {
+      mx.set((e.clientX / window.innerWidth) * 100);
+      my.set((e.clientY / window.innerHeight) * 100);
+    };
+    window.addEventListener("pointermove", move);
+    return () => window.removeEventListener("pointermove", move);
+  }, [mx, my]);
+  return (
+    <div className="hero-photo night" aria-hidden>
+      <motion.div
+        className="night-img"
+        style={{ y, scale }}
+        initial={{ opacity: 0, filter: "brightness(0)" }}
+        animate={{ opacity: 1, filter: "brightness(1)" }}
+        transition={{ delay: 0.9, duration: 2.2, ease: "easeOut" }}
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/images/maxwell-night.jpg" alt="" />
+      </motion.div>
+      <motion.div className="night-light" style={{ background: light }} />
+      <div className="night-fog" />
+      <div className="night-stars" />
+    </div>
+  );
+}

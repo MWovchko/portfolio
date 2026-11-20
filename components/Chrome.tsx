@@ -20,11 +20,11 @@ export function Background() {
       <div className="bg-grid" />
       <motion.div
         className="bg-orb"
-        style={{ width: 620, height: 620, left: "-12%", top: y1, background: "#3ee6ff", filter }}
+        style={{ width: 620, height: 620, left: "-12%", top: y1, background: "var(--orb1)", filter }}
       />
       <motion.div
         className="bg-orb"
-        style={{ width: 560, height: 560, right: "-14%", top: y2, background: "#8b5cf6", filter }}
+        style={{ width: 560, height: 560, right: "-14%", top: y2, background: "var(--orb2)", filter }}
       />
       <div className="bg-noise" />
     </>

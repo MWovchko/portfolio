@@ -356,7 +356,7 @@ export function Strengths() {
 
 /* ---------------- Footer ---------------- */
 
-export function Footer() {
+export function Footer({ theme = "original" }: { theme?: string }) {
   const { contact } = profile;
   return (
     <footer id="contact">
@@ -403,7 +403,18 @@ export function Footer() {
           <span>
             © {new Date().getFullYear()} {profile.name}
           </span>
-          <span className="mono">Built with Next.js · Hosted on Vercel</span>
+          <span className="mono theme-links">
+            Theme:{" "}
+            {[
+              ["original", "/", "Original"],
+              ["neon", "/neon", "Neon"],
+              ["night", "/night", "Night"],
+            ].map(([id, href, label]) => (
+              <a key={id} href={href} className={theme === id ? "on" : ""}>
+                {label}
+              </a>
+            ))}
+          </span>
         </div>
       </div>
     </footer>
