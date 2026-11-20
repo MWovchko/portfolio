@@ -7,9 +7,10 @@ import Hero from "@/components/Hero";
 import { Now, ResumeSection } from "@/components/NowResume";
 import Recommendations from "@/components/Recommendations";
 import TunnelHero from "@/components/Tunnel";
+import ExecutiveHero from "@/components/Executive";
 import { About, Achievements, Footer, Marquee, Strengths } from "@/components/Sections";
 
-export type Theme = "original" | "neon" | "night" | "gallery";
+export type Theme = "original" | "neon" | "night" | "gallery" | "executive";
 
 export default function Site({ theme = "original" }: { theme?: Theme }) {
   useEffect(() => {
@@ -28,7 +29,7 @@ export default function Site({ theme = "original" }: { theme?: Theme }) {
       <Background />
       <Nav />
       <main>
-        {theme === "gallery" ? <TunnelHero /> : <Hero theme={theme} />}
+        {theme === "gallery" ? <TunnelHero /> : theme === "executive" ? <ExecutiveHero /> : <Hero theme={theme} />}
         <About />
         <Now />
         <Achievements />

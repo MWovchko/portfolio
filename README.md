@@ -10,6 +10,7 @@ Built with Next.js + Framer Motion. Deployed on Vercel.
 - `/original` Original (cyan/violet, 3D ID card)
 - `/night` Night theme from the dark teal portrait
 - `/gallery` 3D scroll tunnel into a chamber of featured work
+- `/executive` professional black, white and sage version built from the suit portrait (no cursor spotlight)
 All four share the same content and recommendations. Switch between them in the footer.
 
 ## Editing content
