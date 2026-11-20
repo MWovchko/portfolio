@@ -1,0 +1,40 @@
+{
+  "name": "Riley Chen",
+  "headline": "Nursing Student · Volunteer EMT · Runner",
+  "tagline": "I stay calm when it matters and I show up for people.",
+  "location": "Columbus, OH",
+  "theme": "neon",
+  "alternates": ["executive", "night"],
+  "voice": "first",
+  "photo": null,
+  "email": "riley@example.com",
+  "links": [
+    { "label": "LinkedIn", "href": "https://www.linkedin.com/in/", "placeholder": true }
+  ],
+  "bio": [
+    "I'm a nursing student and a volunteer EMT. I like the moments when a plan has to work under pressure.",
+    "I run marathons to stay level, and I mentor first-year students in my program."
+  ],
+  "stats": [
+    { "value": 2028, "label": "Graduating class" },
+    { "value": 300, "suffix": "+", "label": "Volunteer EMT hours" }
+  ],
+  "resume": {
+    "lookingFor": "Summer nurse externships",
+    "availability": "Open to externships · Summer 2027",
+    "education": [{ "school": "Example State University", "detail": "BSN · Class of 2028", "date": "2024 – 2028" }],
+    "experience": [{ "title": "Volunteer EMT", "org": "Example County EMS", "date": "2024 – Present", "points": ["Respond to 911 calls on weekend shifts."] }],
+    "skills": { "Clinical": ["BLS", "Patient assessment"], "People": ["Mentoring", "Calm under pressure"] },
+    "interests": ["Marathons", "Mentoring"]
+  },
+  "achievements": [
+    { "title": "Certified EMT", "org": "State EMS Board", "date": "2024", "category": "Milestone", "description": "Passed the national registry exam on the first attempt.", "metric": "NREMT", "featured": true },
+    { "title": "Boston Marathon qualifier", "org": "Columbus Marathon", "date": "2025", "category": "Personal", "description": "Ran a qualifying time in my second marathon.", "metric": "BQ", "featured": true }
+  ],
+  "strengths": [
+    { "name": "Composure", "description": "Clear thinking when things move fast.", "evidence": ["300+ EMT hours"] },
+    { "name": "Care", "description": "Patients and teammates know I'm in their corner.", "evidence": ["Peer mentor"] }
+  ],
+  "recommendations": true,
+  "sources": []
+}
