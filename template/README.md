@@ -19,6 +19,10 @@ cd ../my-person-portfolio && npm install && npm run dev               # preview 
 | `components/` | The engine: loader, smooth scroll, cursor, magnetic buttons, reveals, parallax, heroes, sections |
 | `scripts/new-site.mjs` | Intake JSON → a new site folder (photos, palette, profile.ts) |
 | `scripts/palette.mjs` | Photo → palette CSS variables (`npm run palette -- <photo> <theme>`) |
+| `app/intake` | Client intake form → `<name>.intake.json` (off unless `NEXT_PUBLIC_INTAKE=on`; nothing is uploaded) |
+| `app/themes` | Theme gallery: every look with the sample person, for clients to pick from |
+| `LAUNCH.md`, `scripts/launch-check.mjs` | Launch checklist and the automatic 90+ Lighthouse / links / share-preview check |
+| `DOMAIN.md` | Guide for connecting a client's own domain |
 | `examples/` | A sample intake and Brendan Wovchko's real intake (regenerates his site) |
 | `.claude/agents/portfolio-builder.md` | The Portfolio Builder agent: makes, edits and improves these sites |
 

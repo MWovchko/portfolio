@@ -106,6 +106,8 @@ dark presets use `bg`, `bg-2`, `text`, `muted`, `dim`, `cyan`, `violet`, `lime`,
 
 ## Step 5. QA before anyone sees it
 
+Run the full [launch checklist](LAUNCH.md): `npm run launch-check -- <url>` must say READY TO LAUNCH.
+
 - `npm run build` passes (it also type-checks `profile.ts`).
 - Screenshot desktop (1280×800) and phone (390×844) for the home page and each alternate. Look at: hero photo crop, name wrapping, the palette (accent text readable on the background), nav fitting.
 - Every DRAFT badge is intended. Every link opens. No section is empty (turn it off in `config.features` instead).

@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "tsc --noEmit",
     "new": "node scripts/new-site.mjs",
-    "palette": "node scripts/palette.mjs"
+    "palette": "node scripts/palette.mjs",
+    "launch-check": "node scripts/launch-check.mjs"
   },
   "dependencies": {
     "@upstash/redis": "^1.41.0",

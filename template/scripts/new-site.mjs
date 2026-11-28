@@ -19,7 +19,7 @@ import { extractPalette, isCutout } from "./palette.mjs";
 const here = path.dirname(fileURLToPath(import.meta.url));
 const TEMPLATE = path.resolve(here, "..");
 const THEMES = ["neon", "night", "gallery", "executive", "original"];
-const SKIP = new Set(["node_modules", ".next", ".git", ".vercel", "examples", "tsconfig.tsbuildinfo", "next-env.d.ts"]);
+const SKIP = new Set(["intake", "themes", "IntakeForm.tsx", "launch-check.mjs", "node_modules", ".next", ".git", ".vercel", "examples", "tsconfig.tsbuildinfo", "next-env.d.ts"]);
 
 const [intakePath, outArg] = process.argv.slice(2);
 if (!intakePath || !outArg) {
