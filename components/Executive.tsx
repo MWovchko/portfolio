@@ -81,7 +81,7 @@ export default function ExecutiveHero() {
             </h1>
             <motion.p
               className="exec-lead"
-              initial={{ opacity: 0, y: 16 }}
+              initial={{ opacity: 0.01, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 1.4, duration: 0.8, ease }}
             >
