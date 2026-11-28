@@ -20,8 +20,9 @@ function prefersReduced() {
 
 /* ---------------- Loader ---------------- */
 export function Loader({ label = "MW" }: { label?: string }) {
-  const [count, setCount] = useState(0);
   const [done, setDone] = useState(false);
+  const bar = useRef<HTMLDivElement>(null);
+  const num = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     let seen = false;
@@ -34,24 +35,31 @@ export function Loader({ label = "MW" }: { label?: string }) {
     }
     document.documentElement.classList.add("is-loading");
     const start = performance.now();
-    const dur = 1400;
+    // Kept short so the page content shows fast (better speed score).
+    const dur = 700;
     let raf = 0;
+    let t2: ReturnType<typeof setTimeout> | undefined;
+    // Update the bar and counter straight in the page, not through React,
+    // so the intro does not re-render every frame.
     const tick = (t: number) => {
       const p = Math.min(1, (t - start) / dur);
-      setCount(Math.round((1 - Math.pow(1 - p, 3)) * 100));
+      const c = Math.round((1 - Math.pow(1 - p, 3)) * 100);
+      if (bar.current) bar.current.style.transform = `scaleX(${c / 100})`;
+      if (num.current) num.current.textContent = String(c).padStart(3, "0");
       if (p < 1) raf = requestAnimationFrame(tick);
       else
-        setTimeout(() => {
+        t2 = setTimeout(() => {
           setDone(true);
           document.documentElement.classList.remove("is-loading");
           try {
             sessionStorage.setItem("loader-seen", "1");
           } catch {}
-        }, 250);
+        }, 100);
     };
     raf = requestAnimationFrame(tick);
     return () => {
       cancelAnimationFrame(raf);
+      if (t2) clearTimeout(t2);
       document.documentElement.classList.remove("is-loading");
     };
   }, []);
@@ -63,21 +71,21 @@ export function Loader({ label = "MW" }: { label?: string }) {
           className="loader"
           initial={{ clipPath: "inset(0 0 0% 0)" }}
           exit={{ clipPath: "inset(0 0 100% 0)" }}
-          transition={{ duration: 0.9, ease }}
+          transition={{ duration: 0.6, ease }}
           aria-hidden
         >
           <motion.div
             className="loader-mark"
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 0.4 }}
           >
             {label}
           </motion.div>
           <div className="loader-bar">
-            <div style={{ transform: `scaleX(${count / 100})` }} />
+            <div ref={bar} style={{ transform: "scaleX(0)" }} />
           </div>
-          <div className="loader-count mono">{String(count).padStart(3, "0")}</div>
+          <div ref={num} className="loader-count mono">000</div>
         </motion.div>
       )}
     </AnimatePresence>
